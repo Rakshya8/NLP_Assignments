@@ -60,7 +60,7 @@ def a1():
         embedding_dict = embedding_dicts.get(selected_embedding, {})
         
         if search_query:
-            # Find the most similar words using the Gensim model
+            # Find the most similar words using chosen model
             similar_words = find_next_10_cosine_words_for_word(search_query, embedding_dict, top_n=10)
             
             # Save the query to the list of previous queries
