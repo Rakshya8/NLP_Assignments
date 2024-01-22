@@ -47,9 +47,11 @@ def find_next_10_cosine_words_for_word(target_word, embeddings, top_n=10):
 def home():
     return render_template('pages/index.html', previous_queries=previous_queries)
 
-@app.route('/a1', methods=['POST'])
+@app.route('/a1', methods=['POST','GET'])
+@app.route('/a1', methods=['GET', 'POST'])
 def a1():
-    results = []
+    similar_words = []
+
     if request.method == "POST":
         search_query = request.form['search_query']
         selected_embedding = request.form['embedding_type']
