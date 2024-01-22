@@ -9,7 +9,7 @@ app = Flask(__name__)
 embedding_dicts = {}
 
 for embedding_type in ['glove', 'skipgram_positive', 'skipgram_negative']:
-    file_path = f'D:/AIT/Sem2/NLP/NLP_Assignments/Jupyter Files/model/embed_{embedding_type}.pkl'
+    file_path = f'../Jupyter Files//model//embed_{embedding_type}.pkl'
     
     with open(file_path, 'rb') as pickle_file:
         embedding_dicts[embedding_type] = pickle.load(pickle_file)
