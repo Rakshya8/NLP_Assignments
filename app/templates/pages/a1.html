@@ -6,18 +6,26 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='a1.css') }}">
 </head>
-<body>
+<body style="background-color:white;">
 
     {% include 'nav.html' %}
 
-    <div class="container">
-        <h1>A1: Search Engine</h1>
+    <h1>A1: Search Engine</h1>
 
-        <form action="{{ url_for('a1') }}" method="post">
-            <label for="search_query">Enter your search query:</label>
-            <input type="text" id="search_query" name="search_query" required>
-            <button type="submit">Search</button>
-        </form>
+    <form action="{{ url_for('a1') }}" method="post">
+        <label for="search_query">Enter your search query:</label>
+        <input type="text" id="search_query" name="search_query" required value="{{ request.form['search_query'] if request.form['search_query'] }}" >
+        
+        <!-- Dropdown for selecting embedding type -->
+        <label for="embedding_type">Select embedding type:</label>
+        <select id="embedding_type" name="embedding_type" required>
+            <option value="glove" {% if request.form['embedding_type'] == 'glove' %} selected {% endif %}>GloVe</option>
+            <option value="skipgram_positive" {% if request.form['embedding_type'] == 'skipgram_positive' %} selected {% endif %}>Skipgram Positive</option>
+            <option value="skipgram_negative" {% if request.form['embedding_type'] == 'skipgram_negative' %} selected {% endif %}>Skipgram Negative</option>
+        </select>
+        
+        <button type="submit">Search</button>
+    </form>
 
         {% if results %}
             <div class="result-card">

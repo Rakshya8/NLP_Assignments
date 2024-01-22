@@ -5,25 +5,30 @@ from heapq import nlargest
 
 app = Flask(__name__)
 
-# Load the embedding dictionary from the pickled file
-embedding_dict_path = 'D:/AIT/Sem2/NLP/NLP_Assignments/Jupyter Files/model/embed_skipgram_negative.pkl'
-with open(embedding_dict_path, 'rb') as pickle_file:
-    embedding_dict = pickle.load(pickle_file)
+# Load all embedding dictionaries from pickled files
+embedding_dicts = {}
 
+for embedding_type in ['glove', 'skipgram_positive', 'skipgram_negative']:
+    file_path = f'D:/AIT/Sem2/NLP/NLP_Assignments/Jupyter Files/model/embed_{embedding_type}.pkl'
+    
+    with open(file_path, 'rb') as pickle_file:
+        embedding_dicts[embedding_type] = pickle.load(pickle_file)
 
 # Load the Gensim model
 model_path = 'D:/AIT/Sem2/NLP/NLP_Assignments/Jupyter Files/model/model_gensim.pkl'
 with open(model_path, 'rb') as model_file:
     model_gensim = pickle.load(model_file)
 
-#more formally is to divide by its norm
+# Previous queries list
+previous_queries = []
+
+# more formally is to divide by its norm
 def cosine_similarity(A, B):
     dot_product = np.dot(A, B)
     norm_a = np.linalg.norm(A)
     norm_b = np.linalg.norm(B)
     similarity = dot_product / (norm_a * norm_b)
     return similarity
-
 
 def find_next_10_cosine_words_for_word(target_word, embeddings, top_n=10):
     if target_word not in embeddings:
@@ -38,22 +43,28 @@ def find_next_10_cosine_words_for_word(target_word, embeddings, top_n=10):
 
     return top_n_words[:10]
 
-
 @app.route('/')
 def home():
-    # Convert all words to lowercase
-    return render_template('pages/index.html')
+    return render_template('pages/index.html', previous_queries=previous_queries)
 
-@app.route('/a1', methods=['GET', 'POST'])
+@app.route('/a1', methods=['POST'])
 def a1():
     results = []
-    if request.method=="POST":
+    if request.method == "POST":
         search_query = request.form['search_query']
+        selected_embedding = request.form['embedding_type']
+        
+        # Use the selected embedding
+        embedding_dict = embedding_dicts.get(selected_embedding, {})
+        
         if search_query:
             # Find the most similar words using the Gensim model
-            similar_words = find_next_10_cosine_words_for_word(search_query, embedding_dict, top_n=10)        
+            similar_words = find_next_10_cosine_words_for_word(search_query, embedding_dict, top_n=10)
+            
+            # Save the query to the list of previous queries
+            previous_queries.append(search_query)
 
-    return render_template('pages/a1.html', results=similar_words)
+    return render_template('pages/a1.html', results=similar_words, previous_queries=previous_queries)
 
 if __name__ == '__main__':
     app.run(debug=True)
