@@ -1,5 +1,4 @@
-# NLP_Assignment
+# Assignment 1: Search Engine
 
-The assignments for NLP:
+Creating a word based search engine (website is in flask which using the Gensim KeyVector model_
 
-Assignment 1: Search Engine
