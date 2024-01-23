@@ -5,9 +5,8 @@ Creating a word based search engine (website is in flask which using the Gensim 
 ## Demo of website
 ![website_demo](https://github.com/Rakshya8/NLP_Assignments/assets/45217500/478bcf09-cb22-498b-a36c-559e7e516c46)
 
-Instructions to run website
-
-On terminal run: 
+## Instructions to run website:
+Navigate to the project folder and on terminal run: 
 1. cd app
 2. python index.py
 3. http://127.0.0.1:5000/ ( to navigate to home page)
