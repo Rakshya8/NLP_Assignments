@@ -34,18 +34,6 @@
     - [A1: Similar Words](#61-a1-similar-words)
     - [A2: Language Model Text Generation](#62-a2-language-model-text-generation)
 
-7. [Deployment](#7-deployment)
-    - [Hosting Environment](#71-hosting-environment)
-    - [Dependencies](#72-dependencies)
-    - [Configuration](#73-configuration)
-
-8. [Troubleshooting](#8-troubleshooting)
-    - [Common Issues](#81-common-issues)
-    - [Debugging Tips](#82-debugging-tips)
-
-9. [Appendix](#9-appendix)
-    - [Glossary of Terms](#91-glossary-of-terms)
-    - [Version History](#92-version-history)
 
 ## 1. Introduction
 
@@ -160,48 +148,6 @@ The web application interfaces with the language model in the following ways:
 
 - Users input a prompt in A2 and receive generated text from the language model.
 
-## 7. Deployment
-
-### 7.1 Hosting Environment
-
-- The web application is deployed on a hosting platform (e.g., Heroku, AWS, etc.).
-
-### 7.2 Dependencies
-
-- List of dependencies is outlined in `requirements.txt`.
-
-### 7.3 Configuration
-
-- Configuration settings are managed through environment variables.
-
-## 8. Troubleshooting
-
-### 8.1 Common Issues
-
-- Common issues users might encounter, along with possible solutions.
-
-### 8.2 Debugging Tips
-
-- Tips for developers to debug and troubleshoot issues.
-
-## 9. Appendix
-
-### 9.1 Glossary of Terms
-
-- **Flask:** A web framework for Python.
-
-- **LSTM (Long Short-Term Memory):** A type of recurrent neural network (RNN) architecture capable of learning long-term dependencies.
-
-- **Embeddings:** Distributed representations of words in a vector space.
-
-- **Checkpoint:** A snapshot of a pre-trained model's parameters that can be loaded for further use.
-
-- **Tokenization:** The process of breaking down text into smaller units, such as words or subwords.
-
-### 9.2 Version History
-
-- **Version 1.0 (January 2024):**
-  - Initial release of the web application.
 
 ## Demo of website
 ![website_demo](https://github.com/Rakshya8/NLP_Assignments/assets/45217500/478bcf09-cb22-498b-a36c-559e7e516c46)
