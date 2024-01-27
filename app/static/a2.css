@@ -1,0 +1,22 @@
+.result-container {
+    margin-top: 20px;
+}
+
+.result-card {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+}
+
+h3 {
+    margin-top: 15px;
+}
+
+/* Add any additional styling as needed */
