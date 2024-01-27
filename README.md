@@ -1,4 +1,4 @@
-# Assignment 2: Language Model
+![Recording 2024-01-27 212416](https://github.com/Rakshya8/NLP_Assignments/assets/45217500/39f02a3f-eb63-411f-a16f-6bd5b032f160)# Assignment 2: Language Model
 
 ## Table of Contents
 
@@ -89,7 +89,6 @@ The web application integrates with a pre-trained language model for text genera
 #### 3.2.2 Language Model Module
 
 - `lstm.py`: Defines the LSTM language model class and related functions.
-- `embeddings.py`: Manages word embeddings for A1 functionality.
 
 ## 4. Data Flow
 
@@ -128,11 +127,6 @@ The web application integrates with a pre-trained language model for text genera
 
 The web application interfaces with the language model in the following ways:
 
-- **A1 Functionality (Similar Words):**
-  - The user inputs a word.
-  - The backend uses pre-trained word embeddings to find similar words.
-  - Results are displayed on the frontend.
-
 - **A2 Functionality (Language Model Text Generation):**
   - The user inputs a prompt.
   - The backend passes the prompt to the pre-trained LSTM language model.
@@ -150,6 +144,8 @@ The web application interfaces with the language model in the following ways:
 
 
 ## Demo of website
-![website_demo](https://github.com/Rakshya8/NLP_Assignments/assets/45217500/478bcf09-cb22-498b-a36c-559e7e516c46)
+
+![Recording 2024-01-27 212416](https://github.com/Rakshya8/NLP_Assignments/assets/45217500/4abcd6ee-541f-42f3-a85e-dfa3a3b0153a)
+
 
 This detailed documentation outlines how the web application interfaces with the language model, covering user interaction, data flow, and integration specifics.
