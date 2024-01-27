@@ -147,5 +147,12 @@ The web application interfaces with the language model in the following ways:
 
 ![Recording 2024-01-27 212416](https://github.com/Rakshya8/NLP_Assignments/assets/45217500/4abcd6ee-541f-42f3-a85e-dfa3a3b0153a)
 
+## Instructions to run website:
+Navigate to the project folder and on terminal run: 
+1. cd app
+2. python index.py
+3. http://127.0.0.1:5000/ ( to navigate to home page)
+4. To view app click on Project list --> a1 from nav or navigate to http://127.0.0.1:5000/a2
+5. ![image](https://github.com/Rakshya8/NLP_Assignments/assets/45217500/3ad0508c-d46f-4864-af27-3ee893db51af)
 
-This detailed documentation outlines how the web application interfaces with the language model, covering user interaction, data flow, and integration specifics.
+
