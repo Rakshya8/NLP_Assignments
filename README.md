@@ -1,4 +1,4 @@
-![Recording 2024-01-27 212416](https://github.com/Rakshya8/NLP_Assignments/assets/45217500/39f02a3f-eb63-411f-a16f-6bd5b032f160)# Assignment 2: Language Model
+# Assignment 2: Language Model
 
 ## Table of Contents
 
