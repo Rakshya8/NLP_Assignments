@@ -1,3 +1,4 @@
+# Import necessary modules
 from flask import Flask, render_template, request
 import pickle
 import numpy as np
@@ -5,16 +6,19 @@ from heapq import nlargest
 import torch, torchtext
 from lstm import LSTMLanguageModel
 
+# Initialize Flask app
 app = Flask(__name__)
 
 # Load all embedding dictionaries from pickled files
 embedding_dicts = {}
 
+# Use GPU if available, otherwise use CPU
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+# Initialize a basic English tokenizer from torchtext
 tokenizer = torchtext.data.utils.get_tokenizer('basic_english')
 
-
+# Load embeddings from pickled files for different embedding types
 for embedding_type in ['glove', 'skipgram_positive', 'skipgram_negative']:
     file_path = f'../Jupyter Files//model//embed_{embedding_type}.pkl'
     
@@ -30,9 +34,8 @@ model_path = 'D:/AIT/Sem2/NLP/NLP_Assignments/Jupyter Files/model/model_gensim.p
 with open(model_path, 'rb') as model_file:
     model_gensim = pickle.load(model_file)
 
-
+# Load the trained LSTM language model
 model_path_2 = '../Jupyter Files/model/best-val-lstm_lm.pt'
-
 vocab_size = len(loaded_vocab)
 emb_dim = 1024
 hid_dim = 1024
@@ -42,10 +45,10 @@ lr = 1e-3
 lstm_model = LSTMLanguageModel(vocab_size, emb_dim, hid_dim, num_layers, dropout_rate).to(device)
 lstm_model.load_state_dict(torch.load(model_path_2, map_location=device))
 
-# Previous queries list
+# List to store previous queries
 previous_queries = []
 
-# more formally is to divide by its norm
+# Function to calculate cosine similarity between two vectors
 def cosine_similarity(A, B):
     dot_product = np.dot(A, B)
     norm_a = np.linalg.norm(A)
@@ -53,6 +56,7 @@ def cosine_similarity(A, B):
     similarity = dot_product / (norm_a * norm_b)
     return similarity
 
+# Function to find the top N words most similar to a target word using cosine similarity
 def find_next_10_cosine_words_for_word(target_word, embeddings, top_n=10):
     if target_word not in embeddings:
         return ["Word not in Corpus"]
@@ -66,7 +70,7 @@ def find_next_10_cosine_words_for_word(target_word, embeddings, top_n=10):
 
     return top_n_words[:10]
 
-
+# Function to generate text based on a given prompt
 def generate_text(prompt, max_seq_len, temperature, model, tokenizer, vocab, device, seed=None):
     if seed is not None:
         torch.manual_seed(seed)
@@ -81,7 +85,7 @@ def generate_text(prompt, max_seq_len, temperature, model, tokenizer, vocab, dev
             prediction, hidden = model(src, hidden)
             
             # prediction: [batch size, seq len, vocab size]
-            # prediction[:, -1]: [batch size, vocab size] #probability of last vocab
+            # prediction[:, -1]: [batch size, vocab size] # probability of last vocab
             
             probs = torch.softmax(prediction[:, -1] / temperature, dim=-1)  
             prediction = torch.multinomial(probs, num_samples=1).item()    
@@ -98,12 +102,12 @@ def generate_text(prompt, max_seq_len, temperature, model, tokenizer, vocab, dev
     tokens = [itos[i] for i in indices]
     return tokens
 
-
-
+# Route for the home page
 @app.route('/')
 def home():
     return render_template('pages/index.html', previous_queries=previous_queries)
 
+# Route for the first functionality (a1) page
 @app.route('/a1', methods=['POST','GET'])
 def a1():
     similar_words = []
@@ -124,6 +128,7 @@ def a1():
 
     return render_template('pages/a1.html', results=similar_words, previous_queries=previous_queries)
 
+# Route for the second functionality (a2) page
 @app.route('/a2', methods=['POST', 'GET'])
 def a2():
     generated_texts = []
@@ -157,5 +162,6 @@ def a2():
 
     return render_template('pages/a2.html', generated_texts=generated_texts, previous_queries=previous_queries)
 
+# Run the Flask app
 if __name__ == '__main__':
     app.run(debug=True)
