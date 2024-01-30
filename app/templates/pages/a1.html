@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='a1.css') }}">
+</head>
+<body style="background-color:white;">
+
+    {% include 'nav.html' %}
+
+    <h1>A1: Search Engine</h1>
+
+    <form action="{{ url_for('a1') }}" method="post">
+        <label for="search_query">Enter your search query:</label>
+        <input type="text" id="search_query" name="search_query" required value="{{ request.form['search_query'] if request.form['search_query'] }}" >
+        
+        <!-- Dropdown for selecting embedding type -->
+        <label for="embedding_type">Select embedding type:</label>
+        <select id="embedding_type" name="embedding_type" required>
+            <option value="glove" {% if request.form['embedding_type'] == 'glove' %} selected {% endif %}>GloVe</option>
+            <option value="skipgram_positive" {% if request.form['embedding_type'] == 'skipgram_positive' %} selected {% endif %}>Skipgram Positive</option>
+            <option value="skipgram_negative" {% if request.form['embedding_type'] == 'skipgram_negative' %} selected {% endif %}>Skipgram Negative</option>
+        </select>
+        
+        <button type="submit">Search</button>
+    </form>
+
+        {% if results %}
+            <div class="result-card">
+                <h2>Similar Words:</h2>
+                <ul>
+                    {% for word in results %}
+                        <li>{{ word }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+
+</body>
+</html>
