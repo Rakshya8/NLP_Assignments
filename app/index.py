@@ -21,6 +21,7 @@ from torch.nn.utils.rnn import pad_sequence
 app = Flask(__name__)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(device)
 
 #make our work comparable if restarted the kernel
 SEED = 1234

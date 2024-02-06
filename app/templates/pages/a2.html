@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='a1.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='a2.css') }}">
+</head>
+
+<body style="background-color:white;">
+
+    {% include 'nav.html' %}
+
+    <h1>A2: Language Model</h1>
+
+    <form action="{{ url_for('a2') }}" method="post">
+        <label for="prompt_a2">Enter the input word/words:</label>
+        <input type="text" id="prompt_a2" name="prompt_a2" required value="{{ request.form['prompt_a2'] }}">
+
+        <button type="submit">Generate Sentence</button>
+    </form>
+
+    {% if generated_texts %}
+    <div class="result-container">
+        <div class="result-card">
+            <h2>Generated Text</h2>
+            {% for text in generated_texts %}
+                <h3>Temperature: {{ text.temperature }}</h3>
+                <p>{{ text.generated_text }}</p>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</body>
+
+</html>
