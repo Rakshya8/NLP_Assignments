@@ -27,5 +27,7 @@ Navigate to the project folder and on terminal run:
 2. python index.py
 3. http://127.0.0.1:5000/ ( to navigate to home page)
 4. To view app click on Project list --> a3 from nav or navigate to http://127.0.0.1:5000/a3
+![image](https://github.com/Rakshya8/NLP_Assignments/assets/45217500/45ea8071-1046-44de-96b5-26b63a17f468)
+
 
    
