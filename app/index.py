@@ -136,7 +136,6 @@ def generate_text(prompt, max_seq_len, temperature, model, tokenizer, vocab, dev
 TRG_LANGUAGE ='ne'
 SRC_LANGUAGE='en'
 
-# Function to preprocess a sentence (tokenization, normalization, etc.)
 # Function to preprocess a source sentence (tokenization, normalization, etc.)
 def preprocess_src_sentence(sentence, lang):
     token_transform["en"] = get_tokenizer('spacy', language='en_core_web_sm')
@@ -149,19 +148,46 @@ def preprocess_trg_sentence(sentence, lang):
 
 # helper function to club together sequential operations
 def sequential_transforms(*transforms):
+    """
+    Combine multiple text transformations into a single function.
+
+    Args:
+    *transforms: Variable number of text transformation functions.
+
+    Returns:
+    func: A function that applies each transformation sequentially.
+    """
     def func(txt_input):
+        """
+        Apply sequential transformations to the input text.
+
+        Args:
+        txt_input: Input text to be transformed.
+
+        Returns:
+        Transformed text after applying each transformation.
+        """
         for transform in transforms:
             try:
                 txt_input = transform(txt_input)
             except:
+                # If an exception occurs, assume it's an encoding and use encode function
                 txt_input = transform.encode(txt_input).tokens
         return txt_input
     return func
 
 def tensor_transform(token_ids):
-    return torch.cat((torch.tensor([2]),
-                      torch.tensor(token_ids),
-                      torch.tensor([2])))
+    """
+    Add start and end tokens to a sequence of token IDs.
+
+    Args:
+    token_ids: Sequence of token IDs.
+
+    Returns:
+    Tensor with start token (2), token_ids, and end token (2).
+    """
+    return torch.cat((torch.tensor([2]), torch.tensor(token_ids), torch.tensor([2])))
+
 
 # src and trg language text transforms to convert raw strings into tensors indices
 text_transform = {}
@@ -240,27 +266,38 @@ def a2():
 # Route for the translation page (a3)
 @app.route('/a3', methods=['POST', 'GET'])
 def a3():
+    # Initialize translation result
     translation_result = None
 
+    # Check if the request method is POST
     if request.method == "POST":
+        # Get the input sentence from the form
         input_sentence = request.form['input_sentence']
 
+        # Check if the input sentence is not empty
         if input_sentence:
-            # Load the model
+            # Load the pre-trained Seq2Seq model
             load_path = '../Jupyter Files/model/additive_Seq2SeqTransformer.pt'
             params, state = torch.load(load_path)
             model3 = Seq2SeqTransformer(**params, device=device).to(device)
             model3.load_state_dict(state)
             model3.eval()
+
+            # Print the input sentence
             print(input_sentence)
-            # Access 'en' key in token_transform
+
+            # Tokenize and transform the input sentence to tensors
             input = text_transform[SRC_LANGUAGE](input_sentence).to(device)
             print("==",input)
             output = text_transform[TRG_LANGUAGE]("").to(device)
             input = input.reshape(1,-1)
             output = output.reshape(1,-1)
+
+            # Perform model inference
             with torch.no_grad():
                 output, _ = model3(input, output)
+
+            # Process the model output
             output = output.squeeze(0)
             output = output[1:]
             print(output)
@@ -268,10 +305,11 @@ def a3():
             print("OutputMax",output_max)
             mapping = vocab_transform[TRG_LANGUAGE].get_itos()
 
-            # Save the query to the list of previous queries
+            # Save the input sentence to the list of previous queries
             previous_queries.append(input_sentence)
             translation_result = []
 
+            # Process the output tokens
             for token in output_max:
                 token_str = mapping[token.item()]
                 if token_str not in ['[CLS]', '[SEP]', '[EOS]','<eos>']:
@@ -281,8 +319,9 @@ def a3():
             # Join the list of tokens into a single string
             translation_result = ' '.join(translation_result)
 
-
+    # Render the translation result in the HTML template
     return render_template('pages/a3.html', translation_result=translation_result, previous_queries=previous_queries)
+
 
 # Run the Flask app
 if __name__ == '__main__':
