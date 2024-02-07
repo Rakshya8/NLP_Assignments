@@ -10,6 +10,13 @@ Creating language translator which can convert from English to Nepali
 | Multiplicative    | 5.307         | 201.66       | 4.862            | 129.31             |
 | Additive          | 5.171         | 176.082      | 4.731            | 113.436            |
 
+| Attention Variant | Average Time per epoch | Overall time | Inference Time | Model Size (MB)|    Test Loss      |  Test Perplexity     |
+|-------------------|------------------------|--------------|----------------|----------------|-------------------|----------------------|
+| General           |         198.01         |     0.0316   |      0.0101    |  52.9          |    4.842          |        126.783       |
+| Multiplicative    |         195.57         |     0.0312   |      0.0138    |  27.71         |    4.753          |        115.899       | 
+| Additive          |         229.69         |     0.036    |      0.0229    |  27.71         |    4.788          |        120.098       |
+
+
 ## Performace Graph
 
 ### General Attention
