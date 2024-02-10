@@ -15,7 +15,10 @@ from Mutihead_attention import MultiHeadAttentionLayer
 from torchtext.data.utils import get_tokenizer
 from nepalitokenizers import WordPiece
 from torch.nn.utils.rnn import pad_sequence
-
+from PyPDF2 import PdfReader
+import pandas as pd
+import spacy
+from spacy.lang.en.stop_words import STOP_WORDS
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -48,11 +51,6 @@ for embedding_type in ['glove', 'skipgram_positive', 'skipgram_negative']:
 with open('../Jupyter Files//model/vocab_lm.pkl', 'rb') as f:
     loaded_vocab = pickle.load(f)
 
-# Load the Gensim model
-model_path = 'D:/AIT/Sem2/NLP/NLP_Assignments/Jupyter Files/model/model_gensim.pkl'
-with open(model_path, 'rb') as model_file:
-    model_gensim = pickle.load(model_file)
-
 load_path = '../Jupyter Files/model/additive_Seq2SeqTransformer.pt'
 params, state = torch.load(load_path)
 model3 = Seq2SeqTransformer(**params, device=device).to(device)
@@ -78,6 +76,43 @@ vocab_transform_path = '../Jupyter Files/model/vocab'
 
 # Load the vocab_transform using pickle
 vocab_transform = torch.load(vocab_transform_path)
+
+nlp = spacy.load('en_core_web_md')
+skill_path = '../Jupyter Files/data/skills.jsonl'
+ruler = nlp.add_pipe("entity_ruler")
+ruler.from_disk(skill_path)
+
+
+def preprocessing(sentence):
+    stopwords    = list(STOP_WORDS)
+    doc          = nlp(sentence)
+    clean_tokens = []
+    
+    for token in doc:
+        if token.text not in stopwords and token.pos_ != 'PUNCT' and token.pos_ != 'SYM' and \
+            token.pos_ != 'SPACE':
+                clean_tokens.append(token.lemma_.lower().strip())
+                
+    return " ".join(clean_tokens)
+
+def get_entities(resume):
+    
+    doc = nlp(resume)
+
+    entities={}
+    
+    for entity in doc.ents:
+        if entity.label_ in entities:
+            entities[entity.label_].append(entity.text)
+        else:
+            entities[entity.label_] = [entity.text]
+    for ent_type in entities.keys():
+        entities[ent_type]=', '.join(unique_entities(entities[ent_type]))
+    return entities
+
+def unique_entities(x):
+    return list(set(x))
+
 
 # Function to calculate cosine similarity between two vectors
 def cosine_similarity(A, B):
@@ -322,7 +357,25 @@ def a3():
     # Render the translation result in the HTML template
     return render_template('pages/a3.html', translation_result=translation_result, previous_queries=previous_queries)
 
+@app.route('/a4', methods=['GET', 'POST'])
+def a4():
+    if request.method == 'POST':
+        # Handle file upload
+        file = PdfReader(request.files['fileInput'])
+        print("File name",file)
+        if file:
+            # Process the uploaded PDF file
+            page = file.pages[0]
+            text = page.extract_text()
+            text = preprocessing(text)
+            result = get_entities(text)
+            print(result)
 
+            return render_template('pages/a4.html', extracted_info=result)
+            
+
+    return render_template('pages/a4.html', extracted_info=None)
+    
 # Run the Flask app
 if __name__ == '__main__':
     app.run(debug=True)

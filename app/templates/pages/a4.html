@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='a1.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='a4.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.6/jspdf.plugin.autotable.min.js"></script>
+</head>
+
+<body style="background-color:white;">
+
+    {% include 'nav.html' %}
+
+    <h1>A4 Resume Parser</h1>
+
+    <form id="extractionForm" action="{{ url_for('a4') }}" method="POST" enctype="multipart/form-data">
+        <label for="fileInput">Upload a file:</label>
+        <input type="file" id="fileInput" name="fileInput" accept=".pdf" required>
+
+        <button type="submit">Extract Information</button>
+    </form>
+
+    {% if extracted_info %}
+    <div class="result-container">
+        <table id="resultTable">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category, details in extracted_info.items() %}
+                <tr>
+                    <td>{{ category }}</td>
+                    <td>{{ details}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div id="exportBtnContainer">
+        <button onclick="exportToPDF()">Export to PDF</button>
+    </div>
+    {% endif %}
+
+    <script>
+        var pdf; // Declare pdf in the global scope
+
+        function exportToPDF() {
+            pdf = new jsPDF();
+            pdf.text(20, 20, "Extracted Informations");
+            pdf.autoTable({ html: '#resultTable' });
+            pdf.save('extraction_results.pdf');
+            window.open(URL.createObjectURL(pdf.output("blob")));
+        }
+    </script>
+
+</body>
+
+</html>
