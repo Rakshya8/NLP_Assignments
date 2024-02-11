@@ -19,6 +19,7 @@ from PyPDF2 import PdfReader
 import pandas as pd
 import spacy
 from spacy.lang.en.stop_words import STOP_WORDS
+from spacy.matcher import Matcher
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -369,6 +370,27 @@ def a4():
             text = page.extract_text()
             text = preprocessing(text)
             result = get_entities(text)
+            matcher = Matcher(nlp.vocab)
+            pattern = [
+                {"POS": "PROPN",  # person's name should be a proper noun
+                "OP": "{2}",  # person's name usually consists of 2 parts; first name and last name (in some scenario, 3 if a person has middle name)
+                "ENT_TYPE": "PERSON"  # person's name is of 'PERSON' entity type|
+                },
+            ]
+            matcher.add("PERSON NAME", [pattern], greedy="LONGEST")
+            doc = nlp(text)
+            matches = matcher(doc)
+            matches.sort(key = lambda x: x[1])
+
+            person_names = []
+
+            for match in matches:
+                person_names.append((str(doc[match[1]:match[2]]),
+                                    nlp.vocab.strings[match[0]]))
+
+            person_names = list(set(person_names))
+            matcher.add("EMAIL", [[{"LIKE_EMAIL": True}]], greedy="LONGEST")
+            matcher.add("URL", [[{"LIKE_URL": True}]], greedy="LONGEST")
             print(result)
 
             return render_template('pages/a4.html', extracted_info=result)
