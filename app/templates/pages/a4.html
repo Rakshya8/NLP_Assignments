@@ -7,8 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='a1.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='a4.css') }}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.6/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 </head>
 
 <body style="background-color:white;">
@@ -18,7 +17,7 @@
     <h1>A4 Resume Parser</h1>
 
     <form id="extractionForm" action="{{ url_for('a4') }}" method="POST" enctype="multipart/form-data">
-        <label for="fileInput">Upload a file:</label>
+        <label for="fileInput" multiple>Upload a file:</label>
         <input type="file" id="fileInput" name="fileInput" accept=".pdf" required>
 
         <button type="submit">Extract Information</button>
@@ -44,21 +43,39 @@
         </table>
     </div>
     <div id="exportBtnContainer">
-        <button onclick="exportToPDF()">Export to PDF</button>
+        <button onclick="exportToCSV()">Export to CSV</button>
     </div>
     {% endif %}
 
     <script>
-        var pdf; // Declare pdf in the global scope
-
-        function exportToPDF() {
-            pdf = new jsPDF();
-            pdf.text(20, 20, "Extracted Informations");
-            pdf.autoTable({ html: '#resultTable' });
-            pdf.save('extraction_results.pdf');
-            window.open(URL.createObjectURL(pdf.output("blob")));
+        function exportToCSV() {
+            // Get the table data
+            var table = document.getElementById('resultTable');
+            var data = [];
+    
+            for (var i = 0; i < table.rows.length; i++) {
+                var rowData = [];
+                for (var j = 0; j < table.rows[i].cells.length; j++) {
+                    rowData.push(table.rows[i].cells[j].innerText);
+                }
+                data.push(rowData);
+            }
+    
+            // Convert data to CSV format
+            var csv = Papa.unparse(data);
+    
+            // Create a Blob containing the CSV data
+            var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    
+            // Create a download link and trigger a click to download the CSV file
+            var link = document.createElement('a');
+            var url = URL.createObjectURL(blob);
+            link.href = url;
+            link.download = 'extraction_results.csv';
+            link.click();
         }
     </script>
+    
 
 </body>
 

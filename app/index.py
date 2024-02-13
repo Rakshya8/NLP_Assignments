@@ -16,10 +16,13 @@ from torchtext.data.utils import get_tokenizer
 from nepalitokenizers import WordPiece
 from torch.nn.utils.rnn import pad_sequence
 from PyPDF2 import PdfReader
+import fitz 
+import io
 import pandas as pd
 import spacy
 from spacy.lang.en.stop_words import STOP_WORDS
 from spacy.matcher import Matcher
+import csv
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -360,43 +363,56 @@ def a3():
 
 @app.route('/a4', methods=['GET', 'POST'])
 def a4():
+    results=[]
     if request.method == 'POST':
         # Handle file upload
-        file = PdfReader(request.files['fileInput'])
-        print("File name",file)
-        if file:
+        uploaded_files = request.files.getlist('fileInput')
+        for file in uploaded_files:
+            # Handle file upload
+            # Handle file upload
+            pdf_content = file.read()
+            pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
+            if pdf_document:
             # Process the uploaded PDF file
-            page = file.pages[0]
-            text = page.extract_text()
-            text = preprocessing(text)
-            result = get_entities(text)
-            matcher = Matcher(nlp.vocab)
-            pattern = [
-                {"POS": "PROPN",  # person's name should be a proper noun
-                "OP": "{2}",  # person's name usually consists of 2 parts; first name and last name (in some scenario, 3 if a person has middle name)
-                "ENT_TYPE": "PERSON"  # person's name is of 'PERSON' entity type|
-                },
-            ]
-            matcher.add("PERSON NAME", [pattern], greedy="LONGEST")
-            doc = nlp(text)
-            matches = matcher(doc)
-            matches.sort(key = lambda x: x[1])
+                text = ""
+                for page_num in range(pdf_document.page_count):
+                    page = pdf_document[page_num]
+                    text += page.get_text()
+                text = preprocessing(text)
+                result = get_entities(text)
+                results.append(result)
+                print("Results",results)
+                matcher = Matcher(nlp.vocab)
+                pattern = [
+                    {"POS": "PROPN",  # person's name should be a proper noun
+                    "OP": "{2}",  # person's name usually consists of 2 parts; first name and last name (in some scenario, 3 if a person has middle name)
+                    "ENT_TYPE": "PERSON"  # person's name is of 'PERSON' entity type|
+                    },
+                ]
+                matcher.add("PERSON NAME", [pattern], greedy="LONGEST")
+                doc = nlp(text)
+                matches = matcher(doc)
+                matches.sort(key = lambda x: x[1])
 
-            person_names = []
+                person_names = []
 
-            for match in matches:
-                person_names.append((str(doc[match[1]:match[2]]),
-                                    nlp.vocab.strings[match[0]]))
+                for match in matches:
+                    person_names.append((str(doc[match[1]:match[2]]),
+                                        nlp.vocab.strings[match[0]]))
 
-            person_names = list(set(person_names))
-            matcher.add("EMAIL", [[{"LIKE_EMAIL": True}]], greedy="LONGEST")
-            matcher.add("URL", [[{"LIKE_URL": True}]], greedy="LONGEST")
-            print(result)
+                person_names = list(set(person_names))
+                matcher.add("EMAIL", [[{"LIKE_EMAIL": True}]], greedy="LONGEST")
+                matcher.add("URL", [[{"LIKE_URL": True}]], greedy="LONGEST")
+                print(results)
+                extracted_info = result  # Assign the results list to extracted_info
 
-            return render_template('pages/a4.html', extracted_info=result)
+
+                return render_template('pages/a4.html', extracted_info=extracted_info)
             
 
     return render_template('pages/a4.html', extracted_info=None)
+
+
     
 # Run the Flask app
 if __name__ == '__main__':
