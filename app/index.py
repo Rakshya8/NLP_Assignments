@@ -86,7 +86,6 @@ skill_path = '../Jupyter Files/data/skills.jsonl'
 ruler = nlp.add_pipe("entity_ruler")
 ruler.from_disk(skill_path)
 
-
 def preprocessing(sentence):
     stopwords    = list(STOP_WORDS)
     doc          = nlp(sentence)
@@ -401,8 +400,16 @@ def a4():
                                         nlp.vocab.strings[match[0]]))
 
                 person_names = list(set(person_names))
+                matcher.add("PERSON", [[{"POS": "PROPN", "OP": "{2}", "ENT_TYPE": "PERSON"}]], greedy="LONGEST")
                 matcher.add("EMAIL", [[{"LIKE_EMAIL": True}]], greedy="LONGEST")
                 matcher.add("URL", [[{"LIKE_URL": True}]], greedy="LONGEST")
+                matcher.add("PHONE NUMBER", [
+                    [{"ORTH": {"in": ["(", "["]}, "is_digit": True}, {"SHAPE": "dddd"}, {"ORTH": {"in": [")", "]"]}}, {"SHAPE": "dddd"}, {"SHAPE": "dddd"}],
+                    [{"ORTH": {"in": ["(", "["]}, "is_digit": True}, {"SHAPE": "ddd"}, {"ORTH": {"in": [")", "]"]}}, {"SHAPE": "ddd"}, {"SHAPE": "dddd"}],
+                    [{"SHAPE": "ddd"}, {"ORTH": "-"}, {"SHAPE": "ddd"}, {"ORTH": "-"}, {"SHAPE": "dddd"}],
+                    [{"SHAPE": "ddd"}, {"SHAPE": "ddd"}, {"SHAPE": "dddd"}],
+                    ])
+
                 print(results)
                 extracted_info = result  # Assign the results list to extracted_info
 
