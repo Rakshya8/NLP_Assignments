@@ -1,6 +1,6 @@
-# Assignment 4:  Resume Parser
+# Assignment 5:  Sentence Embedding with BERT
 
-Creating resume parser that uses spacy to get key information from resume/resumes
+Creating senetence embedding model that finds cosine similarity between sentences.
 
 ## Detailed evaluation of your sentence transformer model, considering different types of sentences and relevant metrics
 
