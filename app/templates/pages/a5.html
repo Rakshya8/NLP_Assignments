@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='a1.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='a2.css') }}">
+</head>
+
+<body style="background-color:white;">
+
+    {% include 'nav.html' %}
+
+    <h1>A5: Sentence Embedding with BERT</h1>
+
+    <form action="{{ url_for('a5') }}" method="post">
+        <label for="prompt_a5">Enter the sentences to compare:</label>
+        <!-- Input box for the first sentence with value from previous query -->
+        <input type="text" id="prompt_a5_1" name="prompt_a5_1" required
+               value="{% if previous_queries %}{{ previous_queries[-1][0] }}{% endif %}">
+        <!-- Input box for the second sentence with value from previous query -->
+        <input type="text" id="prompt_a5_2" name="prompt_a5_2" required
+               value="{% if previous_queries %}{{ previous_queries[-1][1] }}{% endif %}">
+
+        <button type="submit">Generate Similarity</button>
+    </form>
+
+    {% if generated_scores %}
+    <div class="result-container">
+        <div class="result-card">
+            <h2>Generated Score</h2>
+                <p>{{ generated_scores }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+</body>
+
+</html>
