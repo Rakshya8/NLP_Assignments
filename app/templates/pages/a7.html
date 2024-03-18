@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='a1.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='a2.css') }}">
+</head>
+
+<body style="background-color:white;">
+
+    {% include 'nav.html' %}
+
+    <h1>A7: AIT-GPT</h1>
+
+    <form action="{{ url_for('a7') }}" method="post">
+        <label for="prompt_a5">Enter your message:</label>
+        <!-- Input box for user's message -->
+        <input type="text" id="user_message" name="user_message" required>
+
+        <button type="submit">Send</button>
+    </form>
+
+    {% if generated_response %}
+    <div class="result-container">
+        <div class="result-card">
+            <h2>Chatbot Response</h2>
+            <!-- Display the generated response -->
+            <p>{{ generated_response }}</p>
+            <!-- Provide relevant source documents -->
+            <p>Related Articles:</p>
+            <ul>
+                <li><a href="#">Article 1</a></li>
+                <li><a href="#">Article 2</a></li>
+                <!-- Add more articles as needed -->
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+</body>
+
+</html>
