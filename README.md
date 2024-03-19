@@ -1,4 +1,4 @@
-# Assignment 4:  Resume Parser
+# Assignment 7:  AIT-GPT
 
 Creating resume parser that uses spacy to get key information from resume/resumes
 
