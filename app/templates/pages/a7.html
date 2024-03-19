@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='a1.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='a2.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='a4.css') }}">
 </head>
 
 <body style="background-color:white;">
@@ -25,16 +25,25 @@
 
     {% if generated_response %}
     <div class="result-container">
-        <div class="result-card">
+        <div class="result-card chatbot-response">
             <h2>Chatbot Response</h2>
             <!-- Display the generated response -->
-            <p>{{ generated_response }}</p>
+            <p><strong>Answer: </strong></p>
+            <p>{{ generated_response['answer'] }}</p>
             <!-- Provide relevant source documents -->
-            <p>Related Articles:</p>
-            <ul>
-                <li><a href="#">Article 1</a></li>
-                <li><a href="#">Article 2</a></li>
-                <!-- Add more articles as needed -->
+            <p><strong> Articles:</strong></p>
+            <ul class="related-items">
+                {% for source in generated_response['unique_sources'] %}
+                <li>{{ source }}</li>
+                {% endfor %}
+            </ul>
+            <!-- Provide relevant links -->
+            <p><strong> Links:</strong></p>
+            <ul class="related-items">
+                {% for link in generated_response['unique_links'] %}
+                {% set clean_link = link[:-1] if link.endswith(')') else link %}
+                <li><a href="{{ clean_link }}">{{ clean_link }}</a></li>
+                {% endfor %}
             </ul>
         </div>
     </div>

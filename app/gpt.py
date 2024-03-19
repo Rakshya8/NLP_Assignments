@@ -1,86 +1,114 @@
 import torch
-from langchain.embeddings import HuggingFaceInstructEmbeddings
 import os
-import torch
+import re
+from langchain.embeddings import HuggingFaceInstructEmbeddings
 from langchain import PromptTemplate
 from langchain.vectorstores import FAISS
-from langchain.chains import LLMChain
-from langchain.chains.conversational_retrieval.prompts import CONDENSE_QUESTION_PROMPT
-from langchain.memory import ConversationBufferWindowMemory
 from langchain.chains.question_answering import load_qa_chain
-from langchain.chains import ConversationalRetrievalChain
-from transformers import AutoTokenizer, pipeline, AutoModelForSeq2SeqLM
-from transformers import BitsAndBytesConfig
+from transformers import AutoTokenizer, AutoModelForCausalLM,pipeline
+from langchain.chains import LLMChain, ConversationalRetrievalChain
+from langchain.memory import ConversationBufferWindowMemory
+from langchain.chains.conversational_retrieval.prompts import CONDENSE_QUESTION_PROMPT
 from langchain import HuggingFacePipeline
-import torch
 
+def answer_question(query):
+    # Initialize device
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    
+    # Define model and tokenizer names
+    model_name = 'hkunlp/instructor-base'
+    model_id = 'gpt2'
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-device
+    # Initialize embeddings
+    embedding_model = HuggingFaceInstructEmbeddings(
+        model_name=model_name,
+        model_kwargs={"device": device}
+    )
 
+    # Define the prompt template
+    prompt_template = """
+        I'm your friendly AIT chatbot named ChakyBot, here to assist Chaky and Gun with any questions they have about AIT. 
+        If you're curious about anything about AIT, feel free to ask any questions you may have. 
+        Whether it's about general, or specific topics. 
+        I'm here to help break down complex concepts into easy-to-understand explanations.
+        Just let me know what you're wondering about, and I'll do my best to guide you through it!
+        {context}
+        Question: {question}
+        Answer:
+        """.strip()
 
-model_name = 'hkunlp/instructor-base'
+    # Create a PromptTemplate
+    PROMPT = PromptTemplate.from_template(template=prompt_template)
 
-embedding_model = HuggingFaceInstructEmbeddings(
-    model_name = model_name,
-    model_kwargs = {"device" : device}
-)
+    # Load vector database
+    vector_path = 'D:/AIT/Sem2/NLP/NLP_Assignments/vector-store'
+    db_file_name = 'nlp_stanford'
 
-# Reading the prompt template from the file
-with open('D:/AIT/Sem2/NLP/NLP_Assignments/Jupyter Files/data/prompt_template.txt', 'r') as file:
-    prompt_template = file.read().strip()
+    vectordb = FAISS.load_local(
+        folder_path=os.path.join(vector_path, db_file_name),
+        embeddings=embedding_model,
+        index_name='nlp'
+    )
+    retriever = vectordb.as_retriever()
 
-# Now you can use the prompt template in your code
-PROMPT = PromptTemplate.from_template(template=prompt_template)
+    # Load tokenizer and model for text generation
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    model = AutoModelForCausalLM.from_pretrained(model_id)
 
+    # Create a pipeline for text generation
+    pipe = pipeline(
+        task="text-generation",
+        model=model,
+        tokenizer=tokenizer,
+        device=device
+    )
 
-#calling vector from local
-vector_path = 'D:/AIT/Sem2/NLP/NLP_Assignments/vector-store'
-db_file_name = 'nlp_stanford'
+    llm = HuggingFacePipeline(pipeline=pipe)
+    doc_chain = load_qa_chain(
+        llm=llm,
+        chain_type='stuff',
+        prompt=PROMPT,
+        verbose=True
+    )
+    question_generator = LLMChain(
+        llm=llm,
+        prompt=CONDENSE_QUESTION_PROMPT,
+        verbose=True
+    )
+    memory = ConversationBufferWindowMemory(
+        k=3,
+        memory_key="chat_history",
+        return_messages=True,
+        output_key='answer'
+    )
+    chain = ConversationalRetrievalChain(
+        retriever=retriever,
+        question_generator=question_generator,
+        combine_docs_chain=doc_chain,
+        return_source_documents=True,
+        memory=memory,
+        verbose=True,
+        get_chat_history=lambda h: h
+    )
 
-vectordb = FAISS.load_local(
-    folder_path = os.path.join(vector_path, db_file_name),
-    embeddings = embedding_model,
-    index_name = 'nlp' #default index
-)   
-retriever = vectordb.as_retriever()
+    # Get the answer
+    answer = chain({"question": query})
+    answer_text = answer['answer']
 
-model_id = 'D:/AIT/Sem2/NLP/NLP_Assignments/Jupyter Files/models_fast_chat/fastchat-t5-3b-v1.0'
+    # Extract unique source titles and links
+    unique_sources = set()
+    unique_links = set()
 
-tokenizer = AutoTokenizer.from_pretrained(
-    model_id)
+    for doc in answer['source_documents']:
+        source_title = doc.metadata['source']
+        unique_sources.add(source_title)
 
-tokenizer.pad_token_id = tokenizer.eos_token_id
+        links = re.findall(r'(https?://\S+)', doc.page_content)
+        unique_links.update(links)
 
-offload_folder = 'offload'
-model = AutoModelForSeq2SeqLM.from_pretrained(
-    model_id,
-    device_map = 'auto',
-    offload_folder=offload_folder
-)
-
-pipe = pipeline(
-    task="text2text-generation",
-    model=model,
-    tokenizer=tokenizer,
-    max_new_tokens = 256,
-    model_kwargs = {
-        "temperature" : 0,
-        "repetition_penalty": 1.5
+    return {
+        'answer': answer_text,
+        'unique_sources': list(unique_sources),
+        'unique_links': list(unique_links)
     }
-)
-
-llm = HuggingFacePipeline(pipeline = pipe)
-
-doc_chain = load_qa_chain(
-    llm = llm,
-    chain_type = 'stuff',
-    prompt = PROMPT,
-    verbose = True
-)
-
-query = "What is AIT?"
-input_document = retriever.get_relevant_documents(query)
-
-doc_chain({'input_documents':input_document, 'question':query})
 
