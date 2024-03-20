@@ -2,7 +2,7 @@
 
 Creating resume parser that uses spacy to get key information from resume/resumes
 
-### 2.1 Document Loaders 
+## Document Loaders 
 Use document loaders to load data from a source as Document's. A Document is a piece of text and associated metadata. For example, there are document loaders for loading a simple .txt file, for loading the text contents of any web page, or even for loading a transcript of a YouTube video.
 
 [PDF Loader](https://python.langchain.com/docs/modules/data_connection/document_loaders/pdf)
