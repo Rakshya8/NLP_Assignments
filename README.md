@@ -1,6 +1,6 @@
 # Assignment 7:  AIT-GPT
 
-Creating resume parser that uses spacy to get key information from resume/resumes
+Creating AIT chatbot using relevant and accurate resources from AIT's official website
 
 ## Document Loaders 
 Use document loaders to load data from a source as Document's. A Document is a piece of text and associated metadata. For example, there are document loaders for loading a simple .txt file, for loading the text contents of any web page, or even for loading a transcript of a YouTube video.
@@ -14,14 +14,6 @@ The dataset containing relevant sources related to the Asian Institute of Techno
 ### Dataset Source
 The dataset has been sourced directly from the official AIT website, ensuring the authenticity and reliability of the information provided.
 
-### Relevant Documents
-1. **AIT Annual Reports**
-   - Description: Annual reports provide comprehensive information about AIT's activities, achievements, and financial status.
-   - Source: [AIT Annual Reports](www.ait.ac.th/reports/annual)
-
-2. **Research Publications**
-   - Description: Research publications showcase the academic and research contributions of AIT faculty and students.
-   - Source: [AIT Research Publications](www.ait.ac.th/research/publications)
 
 ### Relevant Websites
 1. **AIT Official Website**
