@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='a1.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='a4.css') }}">
+</head>
+
+<body style="background-color:white;">
+
+    {% include 'nav.html' %}
+
+    <h1>A7: Alpaca Instuction Tuning Evalutation</h1>
+
+    <form action="{{ url_for('a8') }}" method="post">
+        <label for="prompt_a5">Enter your input:</label>
+        <!-- Input box for user's message -->
+        <input type="text" id="user_message" name="user_message" required value="{{ user_message }}">
+
+        <button type="submit">Send</button>
+    </form>
+
+    {% if generated_response %}
+    <div class="result-container">
+        <div class="result-card chatbot-response">
+            {% for line in generated_response[0]['generated_text'].split('\n') %}
+            <p>{{ line }}</p>
+        {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</body>
+
+</html>
