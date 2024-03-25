@@ -11,6 +11,8 @@ Navigate to the project folder and on terminal run:
 4. To view app click on Project list --> a8 from navbar or navigate to http://127.0.0.1:5000/a8
 
 
-![A8](https://github.com/Rakshya8/NLP_Assignments/assets/45217500/27d140c7-81c6-4acc-a30c-1d2dd985956f)
+![Screenshot 2024-03-25 181203](https://github.com/Rakshya8/NLP_Assignments/assets/45217500/f61f6f0e-7cb2-401c-a217-b1a8c6a9a30c)
 
-https://jmp.sh/s/BvsaBs7GtX6hwNosHI7s
+
+## Link to website demo
+https://jumpshare.com/v/Pl4JIJlclOvy3O8DECjw
