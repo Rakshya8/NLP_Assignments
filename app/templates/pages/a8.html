@@ -19,16 +19,15 @@
         <label for="prompt_a5">Enter your input:</label>
         <!-- Input box for user's message -->
         <input type="text" id="user_message" name="user_message" required value="{{ user_message }}">
-
+        <label for="prompt_a5">Enter your instruction:</label>
+        <input type="text" name="instruction" id="instruction" value="{{ instruction }}" required="required">
         <button type="submit">Send</button>
     </form>
 
     {% if generated_response %}
     <div class="result-container">
         <div class="result-card chatbot-response">
-            {% for line in generated_response[0]['generated_text'].split('\n') %}
-            <p>{{ line }}</p>
-        {% endfor %}
+            <p>{{ generated_response }}</p>
         </div>
     </div>
     {% endif %}
