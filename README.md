@@ -10,7 +10,8 @@ Navigate to the project folder and on terminal run:
 3. http://127.0.0.1:5000/ ( to navigate to home page)
 4. To view app click on Project list --> a8 from navbar or navigate to http://127.0.0.1:5000/a8
 
-![Uploading Screenshot 2024-03-25 181203.png…]()
+
+![Screenshot 2024-03-25 181203](https://github.com/Rakshya8/NLP_Assignments/assets/45217500/f61f6f0e-7cb2-401c-a217-b1a8c6a9a30c)
 
 
 ## Link to website demo
